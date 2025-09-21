@@ -12,3 +12,9 @@ add_test(NAME test_cli_legal
 set_tests_properties(test_cli_legal PROPERTIES
   PASS_REGULAR_EXPRESSION "\"can_check\":false;\"call_amount\":1;\"raise\":\{\"min_to\":4"
 )
+
+# Golden output comparisons (exact match)
+add_test(NAME cli_golden_spot
+  COMMAND /bin/sh -c "$<TARGET_FILE:quasar_cli> ${CMAKE_SOURCE_DIR}/scripts/example_spot.json > ${CMAKE_BINARY_DIR}/cli_spot_out.json && diff -u ${CMAKE_SOURCE_DIR}/scripts/goldens/example_spot.out.json ${CMAKE_BINARY_DIR}/cli_spot_out.json")
+add_test(NAME cli_golden_flop
+  COMMAND /bin/sh -c "$<TARGET_FILE:quasar_cli> ${CMAKE_SOURCE_DIR}/scripts/example_flop.json > ${CMAKE_BINARY_DIR}/cli_flop_out.json && diff -u ${CMAKE_SOURCE_DIR}/scripts/goldens/example_flop.out.json ${CMAKE_BINARY_DIR}/cli_flop_out.json")

@@ -74,6 +74,56 @@ bool parse_public_state_from_json(const std::string& input, PublicState& s) {
   return s.num_players >= 2 && s.stacks.size() == s.committed_total.size() && s.stacks.size() == s.committed_on_street.size();
 }
 
+bool parse_rules_from_json(const std::string& input, BettingRules& rules) {
+  // Optional: "min_bet_rule": "BigBlind" | "OneChip"
+  const std::string mbr = get_string(input, "min_bet_rule");
+  if (!mbr.empty()) {
+    if (mbr == "OneChip") rules.min_bet_rule = BettingRules::MinBetRule::OneChip;
+    else rules.min_bet_rule = BettingRules::MinBetRule::BigBlind;
+  }
+  return true;
+}
+
+DiscretizationConfig parse_discretization_from_json(const std::string& input, const DiscretizationConfig& def) {
+  DiscretizationConfig cfg = def;
+  // Optional: {
+  //   "discretization": {
+  //      "pot_fracs": [..],
+  //      "include_min": true/false,
+  //      "include_pot_raise": true/false,
+  //      "include_all_in": true/false
+  //   }
+  // }
+  auto pos = input.find("\"discretization\"");
+  if (pos != std::string::npos) {
+    // pot_fracs
+    // Find pot_fracs array relative to discretization block
+    auto pf_pos = input.find("\"pot_fracs\"", pos);
+    if (pf_pos != std::string::npos) {
+      // temporarily slice from pf_pos to extract array
+      std::vector<double> pf = get_number_array(input.substr(pf_pos), "pot_fracs");
+      if (!pf.empty()) cfg.pot_fracs = pf;
+    }
+    // Booleans: include_min, include_pot_raise, include_all_in
+    auto get_bool = [&](const std::string& key, bool defv) {
+      auto kpos = input.find("\"" + key + "\"", pos);
+      if (kpos == std::string::npos) return defv;
+      kpos = input.find(':', kpos);
+      if (kpos == std::string::npos) return defv;
+      // look for true/false
+      auto tpos = input.find("true", kpos);
+      auto fpos = input.find("false", kpos);
+      if (tpos != std::string::npos && (fpos == std::string::npos || tpos < fpos)) return true;
+      if (fpos != std::string::npos && (tpos == std::string::npos || fpos < tpos)) return false;
+      return defv;
+    };
+    cfg.include_min = get_bool("include_min", cfg.include_min);
+    cfg.include_pot_raise = get_bool("include_pot_raise", cfg.include_pot_raise);
+    cfg.include_all_in = get_bool("include_all_in", cfg.include_all_in);
+  }
+  return cfg;
+}
+
 std::string assemble_response_json(const LegalActionSummary& la,
                                    const std::vector<Action>& discrete) {
   // Base discrete actions + check/fold/call as appropriate → uniform
@@ -103,4 +153,3 @@ std::string assemble_response_json(const LegalActionSummary& la,
 }
 
 }  // namespace quasar
-

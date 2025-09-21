@@ -37,8 +37,10 @@ PYBIND11_MODULE(quasar_engine_py, m) {
   m.def("solve_one_move_json", [](const std::string& json) {
     PublicState s;
     parse_public_state_from_json(json, s);
-    auto la = compute_legal_actions(s);
-    DiscretizationConfig cfg;
+    BettingRules rules;
+    parse_rules_from_json(json, rules);
+    auto la = compute_legal_actions(s, rules);
+    DiscretizationConfig cfg = parse_discretization_from_json(json);
     auto discrete = discretize_actions(s, la, cfg);
     return assemble_response_json(la, discrete);
   }, "Parse a spot JSON and return a JSON summary of legal actions and a uniform discrete policy");

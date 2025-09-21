@@ -95,6 +95,9 @@ Schema (fields used):
 - `last_raise_size`: float (optional)
 - `board`: [0..51] (optional)
 
+See docs/SPOT_JSON.md for the full request/response schema, including optional
+`min_bet_rule` and `discretization` configuration.
+
 ## Next steps
 - Implement poker/PLO public state + action legality (pot‑limit math) in `engine/`
 - Add tree + recursive solver (CFR/DCFR; FP/BR) skeletons

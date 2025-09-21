@@ -97,8 +97,10 @@ int main(int argc, char** argv) {
 
   quasar::PublicState s;
   quasar::parse_public_state_from_json(input, s);
-  auto la = quasar::compute_legal_actions(s);
-  quasar::DiscretizationConfig cfg;
+  quasar::BettingRules rules;
+  quasar::parse_rules_from_json(input, rules);
+  auto la = quasar::compute_legal_actions(s, rules);
+  quasar::DiscretizationConfig cfg = quasar::parse_discretization_from_json(input);
   auto discrete = quasar::discretize_actions(s, la, cfg);
   std::cout << quasar::assemble_response_json(la, discrete) << std::endl;
   return 0;
