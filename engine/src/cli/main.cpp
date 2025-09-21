@@ -114,6 +114,16 @@ int main(int argc, char** argv) {
       auto colon = input.find(':', tpos);
       if (colon != std::string::npos) cfr_iters = static_cast<int>(std::strtod(input.c_str() + colon + 1, nullptr));
     }
+    // parse win_prob and call_k
+    auto find_num = [&](const char* key, double defv) {
+      auto kpos = input.find(std::string("\"") + key + "\"", spos);
+      if (kpos == std::string::npos) return defv;
+      kpos = input.find(':', kpos);
+      if (kpos == std::string::npos) return defv;
+      return std::strtod(input.c_str() + kpos + 1, nullptr);
+    };
+    so_cfg.eval.win_prob = find_num("win_prob", so_cfg.eval.win_prob);
+    so_cfg.eval.call_k = find_num("call_k", so_cfg.eval.call_k);
   }
   so_cfg.cfr_iters = cfr_iters;
   auto res = quasar::solve_one(s, so_cfg);

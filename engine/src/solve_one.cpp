@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "quasar/solver/cfr.h"
+#include "quasar/solver/eval.h"
 
 namespace quasar {
 
@@ -54,7 +55,12 @@ SolveOneResult solve_one(const PublicState& s, const SolveOneConfig& cfg) {
   }
 
   if (cfg.cfr_iters > 0) {
-    auto utils = immediate_utilities(s, la, actions);
+    std::vector<double> utils;
+    if (s.street == 3) {
+      utils = evaluate_simple_river(s, la, actions, cfg.eval);
+    } else {
+      utils = immediate_utilities(s, la, actions);
+    }
     CFRConfig c;
     c.iters = cfg.cfr_iters;
     auto res = cfr_onestep(utils, c);
@@ -68,4 +74,3 @@ SolveOneResult solve_one(const PublicState& s, const SolveOneConfig& cfg) {
 }
 
 }  // namespace quasar
-

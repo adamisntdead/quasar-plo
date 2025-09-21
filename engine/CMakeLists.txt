@@ -6,6 +6,7 @@ add_library(quasar_engine
   src/json/parse_spot.cpp
   src/solve_one.cpp
   src/solver/cfr.cpp
+  src/solver/eval.cpp
 )
 
 target_include_directories(quasar_engine
@@ -27,6 +28,10 @@ endif()
 add_executable(quasar_cli src/cli/main.cpp)
 target_link_libraries(quasar_cli PRIVATE quasar_engine)
 target_compile_features(quasar_cli PRIVATE cxx_std_17)
+
+add_executable(quasar_bench src/bench/bench_solve_one.cpp)
+target_link_libraries(quasar_bench PRIVATE quasar_engine)
+target_compile_features(quasar_bench PRIVATE cxx_std_17)
 
 # Optional TorchScript wrapper
 option(QUASAR_BUILD_TORCH "Enable TorchScript value-net wrapper" OFF)

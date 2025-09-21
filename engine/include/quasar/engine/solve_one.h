@@ -11,6 +11,10 @@ struct SolveOneConfig {
   BettingRules rules;
   DiscretizationConfig discretization;
   int cfr_iters = 0;  // if >0, compute CFR on immediate utilities
+  struct SimpleEvalConfig {
+    double win_prob = 0.5;     // estimated showdown win prob on river
+    double call_k = 0.5;       // sensitivity controlling opponent fold/call vs bet size
+  } eval;
 };
 
 struct SolveOneResult {
@@ -22,4 +26,3 @@ struct SolveOneResult {
 SolveOneResult solve_one(const PublicState& s, const SolveOneConfig& cfg);
 
 }  // namespace quasar
-
