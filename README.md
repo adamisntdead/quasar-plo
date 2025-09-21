@@ -77,6 +77,24 @@ quasar-plo/
   cmake --build build -j
   ```
 
+## CLI: Legal actions
+
+Build target `quasar_cli` prints legal actions for a JSON-described spot:
+
+```
+build/engine/quasar_cli scripts/example_spot.json
+```
+
+Schema (fields used):
+- `street`: "preflop"|"flop"|"turn"|"river"
+- `sb`, `bb`, `ante`: numbers
+- `to_act`, `button`: integers
+- `stacks`: [N floats]
+- `committed_total`: [N floats]
+- `committed_on_street`: [N floats]
+- `last_raise_size`: float (optional)
+- `board`: [0..51] (optional)
+
 ## Next steps
 - Implement poker/PLO public state + action legality (pot‑limit math) in `engine/`
 - Add tree + recursive solver (CFR/DCFR; FP/BR) skeletons
@@ -84,4 +102,3 @@ quasar-plo/
 - Define configs and a “solve one spot” CLI (JSON in/out)
 
 See docs/DESIGN.md and docs/ROADMAP.md for details.
-
