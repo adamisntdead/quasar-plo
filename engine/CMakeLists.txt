@@ -4,6 +4,8 @@ add_library(quasar_engine
   src/plo_legal.cpp
   src/discretize.cpp
   src/json/parse_spot.cpp
+  src/solve_one.cpp
+  src/solver/cfr.cpp
 )
 
 target_include_directories(quasar_engine

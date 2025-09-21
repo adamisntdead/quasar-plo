@@ -101,7 +101,22 @@ int main(int argc, char** argv) {
   quasar::parse_rules_from_json(input, rules);
   auto la = quasar::compute_legal_actions(s, rules);
   quasar::DiscretizationConfig cfg = quasar::parse_discretization_from_json(input);
-  auto discrete = quasar::discretize_actions(s, la, cfg);
-  std::cout << quasar::assemble_response_json(la, discrete) << std::endl;
+  quasar::SolveOneConfig so_cfg;
+  so_cfg.rules = rules;
+  so_cfg.discretization = cfg;
+  // Optional solver config: {"solver": {"type":"cfr", "iters":N}}
+  int cfr_iters = 0;
+  auto spos = input.find("\"solver\"");
+  if (spos != std::string::npos) {
+    auto tpos = input.find("\"iters\"", spos);
+    if (tpos != std::string::npos) {
+      // crude parse of number after iters:
+      auto colon = input.find(':', tpos);
+      if (colon != std::string::npos) cfr_iters = static_cast<int>(std::strtod(input.c_str() + colon + 1, nullptr));
+    }
+  }
+  so_cfg.cfr_iters = cfr_iters;
+  auto res = quasar::solve_one(s, so_cfg);
+  std::cout << quasar::assemble_response_json(res.legal, res.actions, res.probabilities) << std::endl;
   return 0;
 }

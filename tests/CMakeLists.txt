@@ -18,3 +18,7 @@ add_test(NAME cli_golden_spot
   COMMAND /bin/sh -c "$<TARGET_FILE:quasar_cli> ${CMAKE_SOURCE_DIR}/scripts/example_spot.json > ${CMAKE_BINARY_DIR}/cli_spot_out.json && diff -u ${CMAKE_SOURCE_DIR}/scripts/goldens/example_spot.out.json ${CMAKE_BINARY_DIR}/cli_spot_out.json")
 add_test(NAME cli_golden_flop
   COMMAND /bin/sh -c "$<TARGET_FILE:quasar_cli> ${CMAKE_SOURCE_DIR}/scripts/example_flop.json > ${CMAKE_BINARY_DIR}/cli_flop_out.json && diff -u ${CMAKE_SOURCE_DIR}/scripts/goldens/example_flop.out.json ${CMAKE_BINARY_DIR}/cli_flop_out.json")
+
+add_executable(test_torch_wrapper test_torch_wrapper.cpp)
+target_link_libraries(test_torch_wrapper PRIVATE quasar_engine)
+add_test(NAME test_torch_wrapper COMMAND test_torch_wrapper)

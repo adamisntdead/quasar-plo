@@ -152,4 +152,23 @@ std::string assemble_response_json(const LegalActionSummary& la,
   return oss.str();
 }
 
+std::string assemble_response_json(const LegalActionSummary& la,
+                                   const std::vector<Action>& actions,
+                                   const std::vector<double>& probs) {
+  // Emit JSON with provided probabilities
+  std::ostringstream oss;
+  oss << "{";
+  oss << "\"legal\":" << to_json(la) << ",";
+  oss << "\"uniform_actions\":[";  // keep key name for backward compat
+  for (size_t i = 0; i < actions.size(); ++i) {
+    const auto& a = actions[i];
+    const double p = (i < probs.size() ? probs[i] : 0.0);
+    oss << "{\"type\":" << static_cast<int>(a.type) << ",\"amount\":" << a.amount
+        << ",\"prob\":" << p << "}";
+    if (i + 1 < actions.size()) oss << ",";
+  }
+  oss << "]}";
+  return oss.str();
+}
+
 }  // namespace quasar

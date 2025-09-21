@@ -19,7 +19,13 @@ DiscretizationConfig parse_discretization_from_json(const std::string& json,
 // Assemble the CLI-style JSON response with legal summary and a uniform
 // distribution over the provided discrete actions plus check/fold/call as
 // applicable.
+// Assemble response with uniform distribution over [check/fold/call]+discrete
 std::string assemble_response_json(const LegalActionSummary& la,
                                    const std::vector<Action>& discrete);
+
+// Assemble response with explicit actions and probabilities.
+std::string assemble_response_json(const LegalActionSummary& la,
+                                   const std::vector<Action>& actions,
+                                   const std::vector<double>& probs);
 
 }  // namespace quasar

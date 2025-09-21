@@ -39,9 +39,22 @@ PYBIND11_MODULE(quasar_engine_py, m) {
     parse_public_state_from_json(json, s);
     BettingRules rules;
     parse_rules_from_json(json, rules);
-    auto la = compute_legal_actions(s, rules);
     DiscretizationConfig cfg = parse_discretization_from_json(json);
-    auto discrete = discretize_actions(s, la, cfg);
-    return assemble_response_json(la, discrete);
-  }, "Parse a spot JSON and return a JSON summary of legal actions and a uniform discrete policy");
+    SolveOneConfig so_cfg;
+    so_cfg.rules = rules;
+    so_cfg.discretization = cfg;
+    // parse optional solver.iters
+    int cfr_iters = 0;
+    auto spos = json.find("\"solver\"");
+    if (spos != std::string::npos) {
+      auto tpos = json.find("\"iters\"", spos);
+      if (tpos != std::string::npos) {
+        auto colon = json.find(':', tpos);
+        if (colon != std::string::npos) cfr_iters = static_cast<int>(std::strtod(json.c_str() + colon + 1, nullptr));
+      }
+    }
+    so_cfg.cfr_iters = cfr_iters;
+    auto res = solve_one(s, so_cfg);
+    return assemble_response_json(res.legal, res.actions, res.probabilities);
+  }, "Parse a spot JSON and return a JSON summary of legal actions and a strategy (uniform by default, CFR if requested)");
 }
