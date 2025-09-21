@@ -57,6 +57,26 @@ Status: 1–4 completed; 6 partially done (optional C++ Torch wrapper behind fla
 - Keep README and docs updated when interfaces change.
 - Document assumptions in `docs/DESIGN.md` before major refactors.
 
+## Git Workflow
+- Branching
+  - Small, safe increments commit directly to `main`.
+  - For larger or risky changes, use feature branches `feat/<slug>` and open a PR into `main`.
+- Commit style
+  - Conventional commits: `type(scope): summary`.
+  - Types: `feat, fix, docs, test, build, refactor, perf, chore`.
+  - Keep commits scoped and atomic; avoid mixing unrelated changes.
+- Pre-commit checklist
+  - C++: `cmake -S . -B build -DQUASAR_BUILD_TESTS=ON && cmake --build build -j && ctest --test-dir build`.
+  - Python: `pip install -r python/requirements.txt && pytest -q` (in `python/` venv).
+  - Update docs when interfaces/schemas change (README, DESIGN.md, SPOT_JSON.md).
+  - Update goldens if CLI output/schema changes (scripts/goldens/*) and tests that compare them.
+  - No network fetches inside CMake; optional Torch/pybind remain behind flags.
+- Push
+  - Push to `origin` with `git push origin HEAD`.
+  - Ensure working tree is clean and tests pass locally.
+- PRs/Reviews (optional)
+  - For feature branches, ensure CI green and request review before merging.
+
 ## Next Agent Plan (Concrete Steps)
 Status: Steps 1–6 completed; 7 (CFR) partially implemented (one-step CFR, simple river evaluator); CLI/pybind, packing, bucketing SOP, model stub, Torch wrapper, and tests in place.
 
