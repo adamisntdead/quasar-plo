@@ -8,6 +8,7 @@
 #include "quasar/engine/plo_legal.h"
 #include "quasar/engine/json.h"
 #include "quasar/engine/discretize.h"
+#include "quasar/engine/solve_one.h"
 
 // Minimal JSON reader for a known schema using a tiny hand-rolled parser.
 // Expected keys:
