@@ -1,1 +1,1 @@
-{"legal":{"can_check":false,"can_fold":true,"call_amount":1,"raise":{"min_to":4,"max_to":6},"suggestions":[{"type":4,"amount":4},{"type":4,"amount":6}]},"uniform_actions":[{"type":0,"amount":0,"prob":0.25},{"type":2,"amount":1,"prob":0.25},{"type":4,"amount":4,"prob":0.25},{"type":4,"amount":6,"prob":0.25}]}
+{"legal":{"can_check":false,"can_fold":true,"call_amount":1,"raise":{"min_to":4,"max_to":6},"suggestions":[]},"uniform_actions":[{"type":0,"amount":0,"prob":0.25},{"type":2,"amount":1,"prob":0.25},{"type":4,"amount":4,"prob":0.25},{"type":4,"amount":6,"prob":0.25}]}

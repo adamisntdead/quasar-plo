@@ -7,6 +7,7 @@ add_library(quasar_engine
   src/solve_one.cpp
   src/solver/cfr.cpp
   src/solver/eval.cpp
+  src/nn/torchscript_value_net.cpp
   src/eval/river.cpp
   src/solver/equity_matrix.cpp
 )
@@ -41,11 +42,10 @@ if (QUASAR_BUILD_TORCH)
   find_package(Torch QUIET)
   if (Torch_FOUND)
     message(STATUS "Found Torch: ${Torch_VERSION}")
-    target_sources(quasar_engine PRIVATE src/nn/torchscript_value_net.cpp)
     target_compile_definitions(quasar_engine PRIVATE QUASAR_USE_TORCH)
     target_link_libraries(quasar_engine PUBLIC ${TORCH_LIBRARIES})
     target_include_directories(quasar_engine PUBLIC ${TORCH_INCLUDE_DIRS})
   else()
-    message(WARNING "Torch not found; disabling QUASAR_BUILD_TORCH")
+    message(WARNING "Torch not found; disabling QUASAR_BUILD_TORCH features (stub will be used)")
   endif()
 endif()

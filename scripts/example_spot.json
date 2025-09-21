@@ -9,6 +9,11 @@
   "committed_total": [1.0, 2.0],
   "committed_on_street": [1.0, 2.0],
   "last_raise_size": 0.0,
-  "board": []
+  "board": [],
+  "discretization": {
+    "pot_fracs": [1.0],
+    "include_min": true,
+    "include_pot_raise": true,
+    "include_all_in": false
+  }
 }
-

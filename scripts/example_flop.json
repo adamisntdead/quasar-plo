@@ -12,10 +12,9 @@
   "board": [0, 12, 25, -1, -1],
   "min_bet_rule": "BigBlind",
   "discretization": {
-    "pot_fracs": [0.5, 1.0],
-    "include_min": true,
+    "pot_fracs": [0.5, 0.75, 1.0],
+    "include_min": false,
     "include_pot_raise": false,
-    "include_all_in": true
+    "include_all_in": false
   }
 }
-
