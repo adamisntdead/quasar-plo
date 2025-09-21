@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "quasar/engine/plo_legal.h"
+#include "quasar/engine/json.h"
+#include "quasar/engine/discretize.h"
 
 // Minimal JSON reader for a known schema using a tiny hand-rolled parser.
 // Expected keys:
@@ -94,48 +96,10 @@ int main(int argc, char** argv) {
   }
 
   quasar::PublicState s;
-  const std::string street = get_string(input, "street");
-  if (street == "preflop") s.street = 0; else if (street == "flop") s.street = 1; else if (street == "turn") s.street = 2; else if (street == "river") s.street = 3;
-  s.sb = get_number(input, "sb", 1.0);
-  s.bb = get_number(input, "bb", 2.0);
-  s.ante = get_number(input, "ante", 0.0);
-  s.player_to_act = get_int(input, "to_act", 0);
-  s.button = get_int(input, "button", 0);
-  s.last_raise_size = get_number(input, "last_raise_size", 0.0);
-  s.stacks = get_number_array(input, "stacks");
-  s.num_players = static_cast<int>(s.stacks.size());
-  s.committed_total = get_number_array(input, "committed_total");
-  s.committed_on_street = get_number_array(input, "committed_on_street");
-  s.board = get_int_array(input, "board");
-
+  quasar::parse_public_state_from_json(input, s);
   auto la = quasar::compute_legal_actions(s);
-  // Build a discrete action set and uniform probabilities
-  struct UA { int type; double amount; double prob; };
-  std::vector<UA> ua;
-  if (la.can_check) {
-    ua.push_back({static_cast<int>(quasar::ActionType::kCheck), 0.0, 0.0});
-  } else {
-    if (la.can_fold) ua.push_back({static_cast<int>(quasar::ActionType::kFold), 0.0, 0.0});
-    ua.push_back({static_cast<int>(quasar::ActionType::kCall), la.call_amount, 0.0});
-  }
-  for (auto& a : la.suggestions) {
-    ua.push_back({static_cast<int>(a.type), a.amount, 0.0});
-  }
-  const double n = static_cast<double>(std::max<size_t>(1, ua.size()));
-  for (auto& a : ua) a.prob = 1.0 / n;
-
-  // Emit JSON
-  std::ostringstream oss;
-  oss << "{";
-  oss << "\"legal\":" << quasar::to_json(la) << ",";
-  oss << "\"uniform_actions\":[";
-  for (size_t i = 0; i < ua.size(); ++i) {
-    oss << "{\"type\":" << ua[i].type << ",\"amount\":" << ua[i].amount
-        << ",\"prob\":" << ua[i].prob << "}";
-    if (i + 1 < ua.size()) oss << ",";
-  }
-  oss << "]}";
-
-  std::cout << oss.str() << std::endl;
+  quasar::DiscretizationConfig cfg;
+  auto discrete = quasar::discretize_actions(s, la, cfg);
+  std::cout << quasar::assemble_response_json(la, discrete) << std::endl;
   return 0;
 }

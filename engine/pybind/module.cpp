@@ -3,6 +3,9 @@
 
 #include "quasar/engine/version.h"
 #include "quasar/engine/public_state.h"
+#include "quasar/engine/plo_legal.h"
+#include "quasar/engine/json.h"
+#include "quasar/engine/discretize.h"
 
 namespace py = pybind11;
 using namespace quasar;
@@ -30,4 +33,13 @@ PYBIND11_MODULE(quasar_engine_py, m) {
       .def("pot_total", &PublicState::pot_total)
       .def("current_bet_to_call", &PublicState::current_bet_to_call)
       .def("amount_to_call", &PublicState::amount_to_call);
+
+  m.def("solve_one_move_json", [](const std::string& json) {
+    PublicState s;
+    parse_public_state_from_json(json, s);
+    auto la = compute_legal_actions(s);
+    DiscretizationConfig cfg;
+    auto discrete = discretize_actions(s, la, cfg);
+    return assemble_response_json(la, discrete);
+  }, "Parse a spot JSON and return a JSON summary of legal actions and a uniform discrete policy");
 }

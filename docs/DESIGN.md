@@ -26,7 +26,7 @@ See ROADMAP.md for milestones.
 - Let `atc = amount_to_call(player)` for the player to act in the current betting round.
 - Let `pot_now = sum(committed_total)` which includes current street contributions (uncalled bets included).
 - If there is no live bet (`atc == 0`):
-  - Min bet: `max(bb, 0)` (capped by stack)
+  - Min bet: `max(bb, 0)` (capped by stack). Parameterizable via rules: `min_bet_rule = BigBlind | OneChip`.
   - Max bet: `min(pot_now, stack)`
 - If facing a live bet (`atc > 0`):
   - Min raise size: `last_raise_size` if a voluntary raise/bet has occurred on this street; otherwise `bb` (e.g., preflop blinds).
@@ -54,3 +54,7 @@ Per-player slice `[PLAYER_ACT, POSITION, S2PR, BOARD[5], RANGE[K]]` where:
   - `labels`: `[N]` hand→bucket id for input order
   - `centers`: `[K, D]` cluster centers
   - `features`: `[N, D]` pre-cluster feature matrix
+- Discretization Grid (for solver action sets)
+  - Configurable pot-fraction grid `pot_fracs` (default `[0.33, 0.5, 0.75, 1.0]`)
+  - Include min-raise/min-bet, pot-raise (when facing bet), and all-in flags
+  - See `DiscretizationConfig` and `discretize_actions()` in engine

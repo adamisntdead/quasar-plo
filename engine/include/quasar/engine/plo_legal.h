@@ -5,6 +5,7 @@
 
 #include "quasar/engine/public_state.h"
 #include "quasar/engine/types.h"
+#include "quasar/engine/rules.h"
 
 namespace quasar {
 
@@ -33,7 +34,7 @@ struct LegalActionSummary {
 
 // Compute pot-limit legal action information for the player_to_act.
 // Assumes PublicState fields are well-formed (sizes match num_players).
-LegalActionSummary compute_legal_actions(const PublicState& s);
+LegalActionSummary compute_legal_actions(const PublicState& s, const BettingRules& rules = BettingRules{});
 
 // Utility helpers exported for tests/CLI
 double pot_after_call(const PublicState& s, int player);
@@ -43,4 +44,3 @@ double min_raise_size(const PublicState& s);
 std::string to_json(const LegalActionSummary& la);
 
 }  // namespace quasar
-

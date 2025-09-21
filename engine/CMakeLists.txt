@@ -2,6 +2,8 @@ add_library(quasar_engine
   src/version.cpp
   src/public_state.cpp
   src/plo_legal.cpp
+  src/discretize.cpp
+  src/json/parse_spot.cpp
 )
 
 target_include_directories(quasar_engine
