@@ -53,7 +53,22 @@ Per-player slice `[PLAYER_ACT, POSITION, S2PR, BOARD[5], RANGE[K]]` where:
 - Outputs:
   - `labels`: `[N]` hand→bucket id for input order
   - `centers`: `[K, D]` cluster centers
-  - `features`: `[N, D]` pre-cluster feature matrix
+- `features`: `[N, D]` pre-cluster feature matrix
+
+## River Solver (Plan)
+- Goal: full PLO river solver (heads-up initially) to bootstrap training.
+- Components:
+  - Betting tree builder (river-only): nodes capture pot, stacks, to_act, last_raise_size; edges from discretized pot-limit actions until terminal (check/check, call, fold).
+  - Information sets: keyed by public state + own bucket id. Maintain regrets and average strategies per info set.
+  - Terminal utilities: showdown outcomes via exact evaluator, or bucket-vs-bucket expected utility matrix if bucketing is used.
+  - CFR loop: regret-matching updates + linear averaging over iterations; export root strategy.
+  - Performance: cache legal action sets per state; reuse pot-limit math; precompute bucket equity matrices per board.
+
+Near-term steps:
+1) Implement a PLO river hand evaluator (exact 5-card hand ranks; select 2-of-4 + 3-of-5), with tests.
+2) Add bucket-vs-bucket equity precomputation for river boards; produce KxK matrices and a loader.
+3) Build a river betting tree (heads-up) with discretized actions; add a CFR solver over this tree with info-set averaging.
+4) Integrate into `solve_one` to return root strategy; add ctests/goldens and micro-benchmarks.
 - Discretization Grid (for solver action sets)
   - Configurable pot-fraction grid `pot_fracs` (default `[0.33, 0.5, 0.75, 1.0]`)
   - Include min-raise/min-bet, pot-raise (when facing bet), and all-in flags

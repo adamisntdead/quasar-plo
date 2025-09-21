@@ -98,6 +98,19 @@ Schema (fields used):
 See docs/SPOT_JSON.md for the full request/response schema, including optional
 `min_bet_rule` and `discretization` configuration.
 
+## Benchmarks
+- Build: `build/engine/quasar_bench`
+- Usage: `build/engine/quasar_bench scripts/example_spot.json 20000`
+- Prints average microseconds per `solve_one` call (legality + discretization, optional CFR).
+
+## Pybind structured API
+When built with `-DQUASAR_BUILD_PYBIND=ON`, the module exposes:
+- `solve_one_move_json(json_str) -> json_str` (for CLI parity)
+- `solve_one_move(json_str) -> (actions, probs, legal_dict)`
+
+Python convenience wrapper:
+- `python/quasar/engine_api.py` provides `solve_one_move(spot, cli_path=None)` which uses pybind if available, else falls back to the CLI.
+
 ## Next steps
 - Implement poker/PLO public state + action legality (pot‑limit math) in `engine/`
 - Add tree + recursive solver (CFR/DCFR; FP/BR) skeletons
