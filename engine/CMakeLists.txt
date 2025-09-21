@@ -7,6 +7,8 @@ add_library(quasar_engine
   src/solve_one.cpp
   src/solver/cfr.cpp
   src/solver/eval.cpp
+  src/eval/river.cpp
+  src/solver/equity_matrix.cpp
 )
 
 target_include_directories(quasar_engine

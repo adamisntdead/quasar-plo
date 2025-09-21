@@ -1,0 +1,5 @@
+# K=3 bucket vs bucket equity (row player vs column player)
+1.0, 0.6, 0.4
+0.4, 1.0, 0.5
+0.6, 0.5, 1.0
+
