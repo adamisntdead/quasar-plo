@@ -29,11 +29,15 @@ Build a from-scratch, ReBeL-style Pot-Limit Omaha solver capable of near real-ti
   - Targets clamp: `[-0.5, S2PR + 0.5]`; S2PR scaled by 100 post-clamp.
 
 ## What to do next
-1) Implement pot-limit action legality and a minimal `PublicState` in C++.
-2) Add a tiny CLI/API to dump legal actions for a given spot.
-3) Prototype bucketing features and a small KMeans pipeline for river (small K).
-4) Add a dense net stub and TorchScript export; verify C++ can load and call it.
-5) Integrate a skeletal CFR loop with pseudo-leaf net queries (no recursion yet).
+Status: 1–4 completed; 6 partially done (optional C++ Torch wrapper behind flag). Next we focus on solver and evaluation plumbing.
+
+1) Solver skeleton (river-only): CFR node with regret-matching + linear averaging; plug in discretizer; placeholder leaf evaluator.
+2) Value-net wrapper test: add C++ test that loads a TorchScript model (when `QUASAR_BUILD_TORCH=ON`) and runs `compute_values` batched.
+3) Pybind strategy path: expose `solve_one_move` that returns legal actions + per-action strategy (uniform or CFR-derived), and a Python convenience API.
+4) Packing to C++ bridge: define contiguous buffers to pass packed batches to TorchScript from C++; keep behind flag.
+5) Bucketing (river): extend features (draw/wrap/flush indicators) and run larger-K clustering for a handful of boards; export hand→bucket maps.
+6) Benchmarks: add a micro-benchmark for `solve_one_move` latency (legality + discretization; and with TorchScript if enabled).
+7) Documentation: record solver skeleton, value-net query schema, and add/update goldens.
 
 ## Don’ts
 - Don’t copy code from prior repos.
