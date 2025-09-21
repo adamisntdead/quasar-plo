@@ -23,6 +23,13 @@ Optional fields
   - include_pot_raise: bool (default true)
   - include_all_in: bool (default true)
 
+Solver (optional)
+- solver: object to control one-step CFR on the current node
+  - type: "cfr" (reserved; other types may be added)
+  - iters: int number of CFR iterations (>0 to enable)
+  - win_prob: float in [0,1], river-only evaluator showdown win probability (default 0.5)
+  - call_k: float in [0,1], controls opponent call probability sensitivity vs sizing (default 0.5)
+
 Response JSON
 - legal: { can_check: bool, can_fold: bool, call_amount: float, bet?: {min_to,max_to}, raise?: {min_to,max_to}, suggestions: [ {type:int, amount:float} ] }
 - uniform_actions: [ {type:int, amount:float, prob:float} ] — equal-prob discrete set built from check/fold/call and discretized suggestions
@@ -34,4 +41,4 @@ Notes
 - All amounts are in chip units consistent with inputs.
 - Pot-limit math follows docs/DESIGN.md with a parameterizable min-bet rule.
 - Discretization only suggests targets within legal [min_to, max_to].
-
+ - If `solver.iters > 0`, the CLI/pybind return a strategy derived from a simple evaluator (river) or immediate costs (other streets). Otherwise strategy is uniform.

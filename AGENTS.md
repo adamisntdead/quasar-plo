@@ -58,13 +58,29 @@ Status: 1–4 completed; 6 partially done (optional C++ Torch wrapper behind fla
 - Document assumptions in `docs/DESIGN.md` before major refactors.
 
 ## Next Agent Plan (Concrete Steps)
-1) Engine: extend `PublicState` with last action (actor/type/size), positions, blinds/antes; add pot‑limit min/max raise computation + legal action generator.
-2) CLI (or pybind): implement a `solve_one_move` stub that parses a spot JSON and returns legal actions and a uniform strategy distribution.
-3) Python transforms: define per‑player slice packing and validation; add unit tests that check shape, scaling, and zeroing rules.
-4) Bucketing SOP (river first): implement feature extraction for PLO (equity, E[HS^2], wrap/flush indicators, suit/shape), run small‑K clustering (e.g., 500) for a handful of boards, and produce hand→bucket maps.
-5) Dense model stub: implement a minimal transformer‑based network; train on synthetic data to validate TorchScript export/import round‑trip.
-6) Value‑net interface: add C++ TorchScript wrapper with attributes (input_size, output_size, is_sparse) and a batched `compute_values` call.
-7) Solver skeleton: implement CFR with regret‑matching, linear averaging, and a placeholder leaf evaluator; exercise pseudo‑leaf net query path with the dense net stub.
-8) Self‑play harness: create a simple generator that samples spots and pushes (query, target) pairs (start with river only) into a replay; train the dense net to reduce MSE on synthetic targets.
-9) Evaluation: write a micro-benchmark that measures latency for `solve_one_move` with shallow depth and TorchScript inference; add a dummy exploitability calculator (random opponents) to validate plumbing.
-10) Documentation: update docs/DESIGN.md with the legal action math and packing schema; record bucket versioning rules and add golden tests.
+Status: Steps 1–6 completed; 7 (CFR) partially implemented (one-step CFR, simple river evaluator); CLI/pybind, packing, bucketing SOP, model stub, Torch wrapper, and tests in place.
+
+1) River tree-CFR (heads-up):
+   - Build a river betting tree with discretized pot-limit actions (cap raises 1–2 plys).
+   - Information sets keyed by public state + own bucket id; store regrets/avg strategy.
+   - Implement CFR over the tree; return root strategy.
+2) Equity integration:
+   - Extend JSON/pybind to accept per-player bucket distributions and an equity matrix path; add loader and validation.
+   - Use K×K equity matrix to compute terminal utilities.
+3) solve_one integration:
+   - When street=river and ranges+equity are provided, run tree-CFR; otherwise use current evaluator or uniform.
+4) Tests and goldens:
+   - Add ctests for small fixed board/K; ensure probabilities sum to 1 and no illegal actions.
+   - Golden outputs for a fixed config and discretization grid.
+5) Benchmarks:
+   - Measure latency for river tree-CFR with small K and limited raises; optimize/regress if needed.
+
+## Next Prompt (for tomorrow’s AI)
+Implement a heads-up PLO river betting tree and CFR solver over bucketed ranges:
+- Add a river tree builder that uses existing pot-limit legality and `DiscretizationConfig` (limit to 1–2 raise rounds).
+- Define information sets keyed by (public_state, own_bucket). Maintain regret and average strategy tables.
+- Extend SPOT JSON to accept per-player range vectors (`range`: [K] per player) and an `equity_csv` path. Update pybind and CLI to parse these.
+- Load K×K equity matrices (CSV) and use them for terminal utilities (check-check and called pots) during CFR.
+- Integrate with `solve_one`: when ranges+equity are present and street=river, run tree-CFR and return the root strategy; otherwise keep current behavior.
+- Add ctests with a small K (e.g., 3) using `scripts/goldens/equity_K3.csv`, and golden outputs for a fixed spot.
+- Add a micro-benchmark measuring solve_one latency with tree-CFR enabled.

@@ -69,6 +69,17 @@ Near-term steps:
 2) Add bucket-vs-bucket equity precomputation for river boards; produce KxK matrices and a loader.
 3) Build a river betting tree (heads-up) with discretized actions; add a CFR solver over this tree with info-set averaging.
 4) Integrate into `solve_one` to return root strategy; add ctests/goldens and micro-benchmarks.
+
+## PLO River Evaluator (Exact)
+- 5-card evaluator ranks hands by category: High Card < Pair < Two Pair < Trips < Straight < Flush < Full House < Quads < Straight Flush.
+- Cards use indices 0..51 with rank = c % 13 (2..A→0..12) and suit = c / 13.
+- PLO river best hand selects exactly 2 hole cards and 3 board cards; we enumerate 6 hole combos x 10 board combos and evaluate all 60 five-card hands.
+- Deterministic key encodes category and tie-breakers to allow fast max/compare.
+
+## Equity Matrix Format (River Buckets)
+- CSV file with K rows, K columns; floats are row-player expected showdown result vs column-player (diagonal=1.0).
+- Comments (#) and empty lines are ignored; both commas and spaces are supported as separators.
+- Loader: `EquityMatrix` with `K` and `data` (row-major), see engine/include/quasar/solver/equity_matrix.h.
 - Discretization Grid (for solver action sets)
   - Configurable pot-fraction grid `pot_fracs` (default `[0.33, 0.5, 0.75, 1.0]`)
   - Include min-raise/min-bet, pot-raise (when facing bet), and all-in flags
